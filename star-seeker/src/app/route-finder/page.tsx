@@ -1,25 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useGates } from "@/hooks/useGates";
 import { useCheapestRoute } from "@/hooks/useCheapestRoute";
 
 export default function RouteFinderPage() {
   const { data: gates, isLoading: loadingGates } = useGates();
   const [startGate, setStartGate] = useState("");
-  const [endGate, setEndGate] = useState("");
+  const [endGate, setEndGate] = useState("ANYWHERE");
 
   const { data: routes, isLoading, error, fetchRoutes } = useCheapestRoute();
 
-  const handleFindRoutes = () => {
-    if (!startGate || !endGate) return;
-    fetchRoutes(startGate, endGate);
-  };
+  const handleFindRoutes = useCallback(() => {
+    if (!startGate) return;
+    fetchRoutes(startGate, endGate === "ANYWHERE" ? null : endGate);
+  }, [startGate, endGate, fetchRoutes]);
 
   return (
     <div className="max-w-3xl mx-auto mt-10 p-6">
       <h1 className="text-4xl font-bold text-center text-blue-400 mb-8">
-        🛸 Find Cheapest Route
+        🛸 Find Routes
       </h1>
 
       <div className="space-y-4">
@@ -28,10 +28,15 @@ export default function RouteFinderPage() {
         ) : (
           <>
             <div className="flex space-x-2">
+              <label htmlFor="start-gate" className="sr-only">
+                Select Start Gate
+              </label>
               <select
+                id="start-gate"
                 value={startGate}
                 onChange={(e) => setStartGate(e.target.value)}
                 className="w-1/2 p-2 border border-gray-700 rounded-md bg-gray-800 text-gray-300"
+                aria-label="Select Start Gate"
               >
                 <option value="">Select Start</option>
                 {gates?.map((gate) => (
@@ -41,12 +46,17 @@ export default function RouteFinderPage() {
                 ))}
               </select>
 
+              <label htmlFor="end-gate" className="sr-only">
+                Select End Gate
+              </label>
               <select
+                id="end-gate"
                 value={endGate}
                 onChange={(e) => setEndGate(e.target.value)}
                 className="w-1/2 p-2 border border-gray-700 rounded-md bg-gray-800 text-gray-300"
+                aria-label="Select End Gate"
               >
-                <option value="">Select Destination</option>
+                <option value="ANYWHERE">Anywhere</option>
                 {gates?.map((gate) => (
                   <option key={gate.code} value={gate.code}>
                     {gate.name}
@@ -58,7 +68,8 @@ export default function RouteFinderPage() {
             <button
               onClick={handleFindRoutes}
               className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
-              disabled={!startGate || !endGate}
+              disabled={!startGate}
+              aria-disabled={!startGate}
             >
               🚀 Find Routes
             </button>
@@ -76,7 +87,7 @@ export default function RouteFinderPage() {
       {routes && routes.length > 0 ? (
         <div className="mt-6 p-4 border border-gray-700 rounded-md shadow-md bg-gray-800">
           <h2 className="text-xl font-semibold text-blue-300">
-            Cheapest Route
+            Possible Routes
           </h2>
           <ul className="space-y-3">
             {routes.map((route, index) => (
