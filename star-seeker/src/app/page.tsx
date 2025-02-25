@@ -1,5 +1,6 @@
 "use client";
 import { useGates } from "@/hooks/useGates";
+import Link from "next/link";
 
 export default function Home() {
   const { data: gates, isLoading, error } = useGates();
@@ -17,7 +18,11 @@ export default function Home() {
             key={gate.code}
             className="border p-4 rounded-lg shadow-md bg-white"
           >
-            <h2 className="text-xl font-semibold">{gate.name}</h2>
+            <Link href={`/gate/${gate.code}`}>
+              <h2 className="text-xl font-semibold hover:underline cursor-pointer">
+                {gate.name}
+              </h2>
+            </Link>
             <p className="text-gray-600">Location: {gate.location}</p>
           </li>
         ))}
