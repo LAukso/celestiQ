@@ -1,6 +1,5 @@
 "use client";
-
-import { useGates } from "../../hooks/useGates";
+import { useGates } from "@/hooks/useGates";
 
 export default function Home() {
   const { data: gates, isLoading, error } = useGates();
