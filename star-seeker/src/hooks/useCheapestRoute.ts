@@ -20,15 +20,17 @@ const fetchGateData = async (gateCode: string): Promise<GateData> => {
   return response.data;
 };
 
-const findCheapestRoutes = async (
-  startGate: string
+const findRoutesBetweenGates = async (
+  startGate: string,
+  endGate: string
 ): Promise<RouteDetails[]> => {
-  console.log(`Finding cheapest routes from ${startGate}...`);
+  console.log(`Finding routes from ${startGate} to ${endGate}...`);
 
   const startData = await fetchGateData(startGate);
   const allGatesResponse = await api.get(`/gates`);
   const allGates: GateData[] = allGatesResponse.data;
 
+  // Construct the graph
   const graph: Record<string, { code: string; hu: number }[]> = {};
   allGates.forEach((gate) => {
     graph[gate.code] = gate.links.map((link) => ({
@@ -39,27 +41,12 @@ const findCheapestRoutes = async (
 
   console.log("Graph Structure:", graph);
 
-  // Find shortest routes to all gates using Dijkstra’s algorithm
-  const routeList: RouteDetails[] = allGates
-    .filter((gate) => gate.code !== startGate)
-    .map((destinationGate) => {
-      const { path, totalCost } = dijkstra(
-        graph,
-        startGate,
-        destinationGate.code
-      );
-      return {
-        to: destinationGate.name,
-        distance: totalCost,
-        cost: totalCost,
-        route: path,
-      };
-    })
-    .filter((route) => route.distance !== Infinity)
-    .sort((a, b) => a.distance - b.distance);
+  // Find the shortest route from startGate to endGate
+  const { path, totalCost } = dijkstra(graph, startGate, endGate);
 
-  console.log("Sorted Routes:", routeList);
-  return routeList;
+  return path.length > 0
+    ? [{ to: endGate, distance: totalCost, cost: totalCost, route: path }]
+    : [];
 };
 
 const dijkstra = (
@@ -109,7 +96,13 @@ const dijkstra = (
 export const useCheapestRoute = () => {
   const [data, setData] = useState<RouteDetails[] | null>(null);
   const mutation = useMutation({
-    mutationFn: (startGate: string) => findCheapestRoutes(startGate),
+    mutationFn: ({
+      startGate,
+      endGate,
+    }: {
+      startGate: string;
+      endGate: string;
+    }) => findRoutesBetweenGates(startGate, endGate),
     onSuccess: (result) => {
       setData(result);
     },
@@ -119,6 +112,7 @@ export const useCheapestRoute = () => {
     data,
     isLoading: mutation.isPending,
     error: mutation.error,
-    fetchRoutes: (startGate: string) => mutation.mutate(startGate),
+    fetchRoutes: (startGate: string, endGate: string) =>
+      mutation.mutate({ startGate, endGate }),
   };
 };
