@@ -37,6 +37,9 @@ export default function RootLayout({
             <Link href="/journey-cost" className="hover:underline">
               Journey Cost
             </Link>
+            <Link href="/route-finder" className="hover:underline">
+              Route Finder
+            </Link>
           </nav>
           {children}
         </Providers>
