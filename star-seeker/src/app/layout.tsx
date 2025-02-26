@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Providers from "./providers";
 import Layout from "@/components/Layout";
-import Link from "next/link";
+import NavBar from "@/components/NavBar";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,17 +31,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <nav className="bg-white bg-opacity-10 backdrop-blur-md text-white p-4 flex justify-center space-x-4 z-10 fixed w-full">
-            <Link href="/" className="hover:underline">
-              Hyperspace Gates
-            </Link>
-            <Link href="/journey-cost" className="hover:underline">
-              Journey Cost
-            </Link>
-            <Link href="/route-finder" className="hover:underline">
-              Route Finder
-            </Link>
-          </nav>
+          <NavBar /> {/* ✅ Navigation is now in a separate client component */}
           <Layout>{children}</Layout>
         </Providers>
       </body>

@@ -119,8 +119,8 @@ export default function Home() {
               key={gate.code}
               className={`absolute flex flex-col items-center justify-center
               ${sizeClass} rounded-full border-4 border-gray-700
-              transition-all duration-300 cursor-pointer shadow-lg
-              hover:shadow-blue-500/50 ring-4 ring-gray-500`}
+              transition-all duration-300 shadow-lg
+              hover:shadow-blue-500/50 ring-4 ring-gray-500 cursor-pointer`}
               style={{
                 top: `${positions[index]?.y}px`,
                 left: `${positions[index]?.x}px`,
