@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Providers from "./providers";
+import Layout from "@/components/Layout";
 import Link from "next/link";
 import "./globals.css";
 
@@ -30,9 +31,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <nav className="bg-gray-800 text-white p-4 flex justify-center space-x-4">
+          <nav className="bg-white bg-opacity-10 backdrop-blur-md text-white p-4 flex justify-center space-x-4 z-10 fixed w-full">
             <Link href="/" className="hover:underline">
-              Home
+              Hyperspace Gates
             </Link>
             <Link href="/journey-cost" className="hover:underline">
               Journey Cost
@@ -41,7 +42,7 @@ export default function RootLayout({
               Route Finder
             </Link>
           </nav>
-          {children}
+          <Layout>{children}</Layout>
         </Providers>
       </body>
     </html>
